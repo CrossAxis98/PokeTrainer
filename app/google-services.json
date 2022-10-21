@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706784336950",
+    "project_id": "poketrainer-254b3",
+    "storage_bucket": "poketrainer-254b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706784336950:android:08957762376208b5f08c97",
+        "android_client_info": {
+          "package_name": "com.example.poketrainer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706784336950-sgdgmul1fr85535vgi3t44ktsmnfjrr2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnFycCVjZyn5X81E74S_GEnPU4G21ezaY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706784336950-sgdgmul1fr85535vgi3t44ktsmnfjrr2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,15 +4,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
@@ -24,13 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
 fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
@@ -44,7 +46,6 @@ fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -68,13 +69,61 @@ fun LogoText() {
     Text(
         text = "PokeTrainer",
         color = Color.Black.copy(alpha = 0.7f),
-        style = MaterialTheme.typography.h3,
+        style = MaterialTheme.typography.h4,
         fontWeight = FontWeight.SemiBold
     )
     Text(
         text = "Catch'Em all!",
         color = Color.Gray,
         style = MaterialTheme.typography.h5
+    )
+}
+
+@Composable
+fun PokeTrainerAppBar(
+    title: String = "PokeTrainer",
+    isHomeScreen: Boolean = false,
+    navController: NavController,
+    icon: ImageVector? = null,
+    onArrowBackClicked: () -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            Row(horizontalArrangement = Arrangement.Start) {
+                if (icon == null) {
+                    Box {}
+                } else {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Icon TopAppBar",
+                        modifier = Modifier.clickable {
+                            onArrowBackClicked.invoke()
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+                Text(
+                    text = title,
+                    color = Color.DarkGray,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+            }
+        },
+        //modifier = Modifier.,
+        actions = {
+            if (isHomeScreen) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Person icon"
+                    )
+                }
+            }
+        } ,
+        backgroundColor = Color.Transparent,
+        elevation = 0.dp
     )
 }
 

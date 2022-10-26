@@ -1,0 +1,6 @@
+package com.example.poketrainer.model
+
+data class StatX(
+    val name: String,
+    val url: String
+)

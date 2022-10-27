@@ -24,13 +24,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -66,10 +66,12 @@ fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
 
 @Composable
 fun LogoText() {
+    val configuration = LocalConfiguration.current
     Text(
         text = "PokeTrainer",
         color = Color.Black.copy(alpha = 0.7f),
-        style = MaterialTheme.typography.h4,
+        style = if (configuration.screenWidthDp <= 360) MaterialTheme.typography.h4
+                else MaterialTheme.typography.h3,
         fontWeight = FontWeight.SemiBold
     )
     Text(

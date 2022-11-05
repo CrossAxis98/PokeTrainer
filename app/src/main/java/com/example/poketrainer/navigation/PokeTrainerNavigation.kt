@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.poketrainer.screens.SplashScreen
 import com.example.poketrainer.screens.home.HomeScreen
 import com.example.poketrainer.screens.login.LoginScreen
+import com.example.poketrainer.screens.search.SearchScreen
 
 @Composable
 fun PokeTrainerNavigation() {
@@ -25,6 +26,8 @@ fun PokeTrainerNavigation() {
         composable(PokeTrainerScreens.HomeScreen.name) {
             HomeScreen(navController)
         }
-
+        composable(PokeTrainerScreens.SearchScreen.name) {
+            SearchScreen(navController)
+        }
     }
 }

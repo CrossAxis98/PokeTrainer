@@ -1,7 +1,5 @@
 package com.example.poketrainer.screens.login
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,9 +19,6 @@ import com.example.poketrainer.components.LogoText
 import com.example.poketrainer.components.PasswordInput
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.ShowBars
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {

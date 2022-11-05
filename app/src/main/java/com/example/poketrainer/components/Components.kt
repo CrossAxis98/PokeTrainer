@@ -44,6 +44,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.poketrainer.model.Pokemon
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
+import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.getColorByPokemonType
 
 @Composable
@@ -275,12 +276,14 @@ fun PokemonCard(
 @Composable
 fun PokemonCardInRow(
     pokemon: PokemonBasicInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     val imageUrl = pokemon.imageUrl
     Card(
-        modifier = modifier
-            .padding(10.dp),
+        modifier = modifier.clickable {
+            navController.navigate("${PokeTrainerScreens.DetailScreen.name}/${pokemon.name}")
+        },
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)
     ) {

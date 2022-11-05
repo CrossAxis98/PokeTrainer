@@ -1,10 +1,13 @@
 package com.example.poketrainer.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.poketrainer.screens.SplashScreen
+import com.example.poketrainer.screens.details.DetailsScreen
 import com.example.poketrainer.screens.home.HomeScreen
 import com.example.poketrainer.screens.login.LoginScreen
 import com.example.poketrainer.screens.search.SearchScreen
@@ -28,6 +31,16 @@ fun PokeTrainerNavigation() {
         }
         composable(PokeTrainerScreens.SearchScreen.name) {
             SearchScreen(navController)
+        }
+        val detailsScreenRoute = "${PokeTrainerScreens.DetailScreen.name}/{pokemonName}"
+        composable(
+            detailsScreenRoute,
+            arguments = listOf(navArgument("pokemonName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            DetailsScreen(
+                navController,
+                backStackEntry.arguments!!.getString("pokemonName").toString()
+            )
         }
     }
 }

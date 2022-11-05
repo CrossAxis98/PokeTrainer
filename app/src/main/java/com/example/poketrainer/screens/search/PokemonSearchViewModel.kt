@@ -31,10 +31,7 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
     var isLoadingAllPokemons = mutableStateOf(false)
     var endReached = mutableStateOf(false)
 
-    private var cachedPokemonList = listOf<PokemonBasicInfo>()
-
     init {
-        //loadPokemon()
         getAllPokemons()
     }
 

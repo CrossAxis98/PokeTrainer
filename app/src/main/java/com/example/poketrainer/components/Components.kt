@@ -277,17 +277,10 @@ fun PokemonCardInRow(
     pokemon: PokemonBasicInfo,
     modifier: Modifier = Modifier
 ) {
-    val configuration = LocalConfiguration.current
     val imageUrl = pokemon.imageUrl
-    val cardSize = if (configuration.screenWidthDp <= 360) 120.dp else 150.dp
     Card(
         modifier = modifier
-            .padding(10.dp)
-            .size(
-                width = cardSize,
-                height = cardSize
-            )
-            ,
+            .padding(10.dp),
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -306,7 +299,7 @@ fun PokemonCardInRow(
             AsyncImage(
                 model = imageUrl,
                 contentDescription = "Pokemon Image",
-                modifier = Modifier.size(cardSize - 30.dp)
+                modifier = Modifier.size(120.dp)
             )
             Text(
                 text = pokemon.name,

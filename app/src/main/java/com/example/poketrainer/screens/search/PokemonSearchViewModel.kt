@@ -22,9 +22,6 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
     ViewModel() {
 
     private val tagForLogging = "PokemonSearchViewModel"
-    var pokemon: Pokemon? by mutableStateOf(Pokemon())
-    var isLoading by mutableStateOf(true)
-
     private var curPage = 0
     var pokemonList = mutableStateOf<List<PokemonBasicInfo>>(listOf())
     var loadErrorAllPokemons = mutableStateOf("")
@@ -33,10 +30,6 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
 
     init {
         getAllPokemons()
-    }
-
-    private fun loadPokemon() {
-        searchPokemon("jynx")
     }
 
     fun getAllPokemons() {
@@ -79,27 +72,6 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
             } catch (exception: Exception) {
                 isLoadingAllPokemons.value = false
                 Log.d(tagForLogging, "getAllPokemons(): ${exception.message.toString()}")
-            }
-        }
-    }
-
-    fun searchPokemon(name: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (name.isEmpty()) return@launch
-            try {
-                when (val response = repository.getPokemon(name)) {
-                    is Resource.Success -> {
-                        pokemon = response.data!!
-                        if (pokemon != null) isLoading = false
-                    }
-                    is Resource.Error -> {
-                        isLoading = false
-                        Log.e(tagForLogging, "searchPokemon(): Failed getting pokemon")
-                    }
-                }
-            } catch (e: Exception) {
-                isLoading = false
-                Log.d(tagForLogging, "searchPokemon(): ${e.message.toString()}")
             }
         }
     }

@@ -280,9 +280,11 @@ fun PokemonCardInRow(
     navController: NavController
 ) {
     val imageUrl = pokemon.imageUrl
+    val pokemonName = pokemon.name
     Card(
         modifier = modifier.clickable {
-            navController.navigate("${PokeTrainerScreens.DetailScreen.name}/${pokemon.name}")
+            navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
+                    pokemonName.replaceFirstChar { it.lowercase() })
         },
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)
@@ -305,7 +307,7 @@ fun PokemonCardInRow(
                 modifier = Modifier.size(120.dp)
             )
             Text(
-                text = pokemon.name,
+                text = pokemonName,
                 fontWeight = FontWeight.SemiBold,
                 overflow = TextOverflow.Ellipsis
             )

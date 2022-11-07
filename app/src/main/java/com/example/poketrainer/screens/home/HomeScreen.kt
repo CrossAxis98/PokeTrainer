@@ -30,6 +30,7 @@ fun HomeScreen(
     ShowBars(isRequiredToShowBars = true)
 
     Scaffold(
+        modifier = Modifier.padding(10.dp),
         topBar = {
             PokeTrainerAppBar(
             isHomeScreen = true,

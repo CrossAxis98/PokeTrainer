@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
 fun PokeTrainerApp() {
     Surface(
         modifier = Modifier
-            .padding(10.dp)
             .fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {

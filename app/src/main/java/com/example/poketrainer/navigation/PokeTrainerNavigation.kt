@@ -38,9 +38,9 @@ fun PokeTrainerNavigation() {
             arguments = listOf(navArgument("pokemonName") { type = NavType.StringType })
         ) { backStackEntry ->
             DetailsScreen(
-                navController,
-                backStackEntry.arguments!!.getString("pokemonName").toString()
-            )
+                backStackEntry.arguments!!.getString("pokemonName").toString(),
+                navController
+                )
         }
     }
 }

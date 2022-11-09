@@ -1,14 +1,10 @@
 package com.example.poketrainer.screens.search
 
-import android.text.method.TextKeyListener.Capitalize
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.poketrainer.data.Resource
-import com.example.poketrainer.model.Pokemon
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.repository.PokeRepository
 import com.example.poketrainer.utils.Constants.PAGE_SIZE
@@ -24,17 +20,77 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
     private val tagForLogging = "PokemonSearchViewModel"
     private var curPage = 0
     var pokemonList = mutableStateOf<List<PokemonBasicInfo>>(listOf())
-    var loadErrorAllPokemons = mutableStateOf("")
-    var isLoadingAllPokemons = mutableStateOf(false)
+    var loadError = mutableStateOf("")
+    var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
+
+    private var cachedPokemonList = listOf<PokemonBasicInfo>()
+    private var isSearchStarting = true
+    var isSearching = mutableStateOf(false)
 
     init {
         getAllPokemons()
     }
 
+    fun searchSpecifiedPokemon(name: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                when (val pokemon = repository.getPokemon(name.lowercase())) {
+                    is Resource.Success -> {
+                        pokemonList.value = listOf(PokemonBasicInfo(
+                            pokemon.data!!.name.toString().replaceFirstChar { it.uppercase() },
+                            pokemon.data.sprites!!.front_default,
+                            pokemon.data.id!!
+                        ))
+                        isLoading.value = false
+                        loadError.value = ""
+                    }
+                    is Resource.Error -> {
+                        isLoading.value = false
+                        loadError.value = pokemon.message.toString()
+                    }
+                    else -> {
+                        Log.e(tagForLogging, "XXX Unexpected behavior in getAllPokemons()")
+                    }
+                }
+            } catch (exception: Exception) {
+                isLoading.value = false
+                Log.e(tagForLogging, "XXX searchSpecifiedPokemon(): ${exception.message.toString()}")
+            }
+
+        }
+    }
+
+    fun searchPokemonFromAlreadyLoadedList(query: String) {
+        val listToSearch = if (isSearchStarting) {
+            pokemonList.value
+        } else {
+            cachedPokemonList
+        }
+        viewModelScope.launch(Dispatchers.Default) {
+            if (query.isEmpty()) {
+                pokemonList.value = cachedPokemonList
+                isSearching.value = false
+                isSearchStarting = true
+                return@launch
+            }
+            val results = listToSearch.filter {
+                it.name.contains(query.trim(), ignoreCase = true) ||
+                        it.number.toString() == query.trim()
+            }
+            if (isSearchStarting) {
+                cachedPokemonList = pokemonList.value
+                isSearchStarting = false
+            }
+            pokemonList.value = results
+            isSearching.value = true
+        }
+    }
+
     fun getAllPokemons() {
         viewModelScope.launch {
-            isLoadingAllPokemons.value = true
+            isLoading.value = true
             try {
                 when (val response = repository.getAllPokemons(PAGE_SIZE, curPage * PAGE_SIZE)) {
                     is Resource.Success -> {
@@ -55,23 +111,23 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
                             )
                         }
                         curPage++
-                        loadErrorAllPokemons.value = ""
-                        isLoadingAllPokemons.value = false
+                        loadError.value = ""
+                        isLoading.value = false
                         pokemonList.value += pokemonListPerPage
 
                     }
                     is Resource.Error -> {
-                        loadErrorAllPokemons.value = response.message.toString()
-                        isLoadingAllPokemons.value = false
+                        loadError.value = response.message.toString()
+                        isLoading.value = false
                     }
                     else -> {
-                        Log.d(tagForLogging, "Unexpected behavior in getAllPokemons()")
+                        Log.e(tagForLogging, "XXX Unexpected behavior in getAllPokemons()")
                     }
                 }
 
             } catch (exception: Exception) {
-                isLoadingAllPokemons.value = false
-                Log.d(tagForLogging, "getAllPokemons(): ${exception.message.toString()}")
+                isLoading.value = false
+                Log.e(tagForLogging, "XXX getAllPokemons(): ${exception.message.toString()}")
             }
         }
     }

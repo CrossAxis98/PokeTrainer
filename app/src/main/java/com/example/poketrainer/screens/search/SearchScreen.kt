@@ -1,21 +1,22 @@
 package com.example.poketrainer.screens.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +38,7 @@ fun SearchScreen(
     val pokemonName = remember { mutableStateOf("") }
     val isSearching by remember { viewModel.isSearching }
     val keyboardController = LocalSoftwareKeyboardController.current
+    var isSearchRequested by remember { viewModel.isSearchRequested }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -53,6 +55,7 @@ fun SearchScreen(
                     imeAction = ImeAction.Search,
                     onAction = KeyboardActions {
                         viewModel.searchSpecifiedPokemon(pokemonName.value.trim())
+                        isSearchRequested = true
                         keyboardController?.hide()
                     }
                 )
@@ -99,14 +102,36 @@ fun SearchScreen(
                             CircularProgressIndicator()
                         }
                     }
+
                 }
             }
+            if (!isLoading && pokemonList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp, horizontal = 8.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    if (isSearchRequested) {
+                        Text(
+                            text = "We didn't find matching pokemon.",
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = "We didn't find matching pokemon in current loaded set.\n" +
+                                    "Enter whole name and press search to check whole database.",
+                            textAlign = TextAlign.Center
+                        )
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
+                    }
+                }
+            }
+            if (loadError.isNotEmpty() && !loadError.contains("404", ignoreCase = true)) {
+                Box(
+                modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
                 contentAlignment = Center
-            ) {
-                if (loadError.isNotEmpty()) {
+                ) {
                     RetrySection(error = loadError) {
                         viewModel.getAllPokemons()
                     }

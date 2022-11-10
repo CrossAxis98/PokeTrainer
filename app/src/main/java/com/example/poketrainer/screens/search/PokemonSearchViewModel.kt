@@ -1,7 +1,10 @@
 package com.example.poketrainer.screens.search
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.poketrainer.data.Resource
@@ -27,6 +30,7 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
     private var cachedPokemonList = listOf<PokemonBasicInfo>()
     private var isSearchStarting = true
     var isSearching = mutableStateOf(false)
+    var isSearchRequested = mutableStateOf(false)
 
     init {
         getAllPokemons()
@@ -35,6 +39,7 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
     fun searchSpecifiedPokemon(name: String) {
         viewModelScope.launch {
             isLoading.value = true
+            isSearchRequested.value = true
             try {
                 when (val pokemon = repository.getPokemon(name.lowercase())) {
                     is Resource.Success -> {
@@ -58,7 +63,6 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
                 isLoading.value = false
                 Log.e(tagForLogging, "XXX searchSpecifiedPokemon(): ${exception.message.toString()}")
             }
-
         }
     }
 
@@ -85,6 +89,7 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
             }
             pokemonList.value = results
             isSearching.value = true
+            isSearchRequested.value = false
         }
     }
 
@@ -121,13 +126,12 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
                         isLoading.value = false
                     }
                     else -> {
-                        Log.e(tagForLogging, "XXX Unexpected behavior in getAllPokemons()")
+                        Log.e(tagForLogging, "Unexpected behavior in getAllPokemons()")
                     }
                 }
-
             } catch (exception: Exception) {
                 isLoading.value = false
-                Log.e(tagForLogging, "XXX getAllPokemons(): ${exception.message.toString()}")
+                Log.e(tagForLogging, "getAllPokemons(): ${exception.message.toString()}")
             }
         }
     }

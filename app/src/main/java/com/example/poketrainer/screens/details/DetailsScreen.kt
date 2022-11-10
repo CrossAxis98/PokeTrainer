@@ -43,6 +43,8 @@ import com.example.poketrainer.model.Type
 import com.example.poketrainer.utils.getColorByPokemonType
 import com.example.poketrainer.utils.parseTypeToColor
 import com.example.poketrainer.R
+import com.example.poketrainer.navigation.PokeTrainerScreens
+import com.example.poketrainer.screens.search.SearchScreen
 import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
 
@@ -289,7 +291,8 @@ fun PokemonDetailTopSection(
                 .size(36.dp)
                 .offset(16.dp, 16.dp)
                 .clickable {
-                    navController.popBackStack()
+//                    navController.popBackStack()
+                    navController.navigate(PokeTrainerScreens.SearchScreen.name)
                 }
         )
     }
@@ -356,7 +359,9 @@ fun PokemonBaseStats(
     val maxBaseStat = remember {
         pokemonInfo.stats!!.maxOf { it.baseStat }
     }
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 6.dp)) {
         Text(
             text = "Base stats:",
             fontSize = 18.sp,

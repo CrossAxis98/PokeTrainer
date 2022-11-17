@@ -21,12 +21,6 @@ fun HomeScreen(
 ) {
     val pokemonList by remember { viewModel.pokemonList }
     val isLoading by remember  { viewModel.isLoading }
-//    var pokemonList by remember {
-//        mutableStateOf(emptyList<PokemonBasicInfo>())
-//    }
-//    if (viewModel.pokemonList.value.isNotEmpty()) {
-//        pokemonList = viewModel.pokemonList.value
-//    }
 
     ShowBars(isRequiredToShowBars = true)
 
@@ -49,7 +43,6 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
 
-//                Log.d("XXX", "Renderowanie obrazu, size ${pokemonList.size}")
                 Text(
                     text = "Pokemons you want to catch:",
                     style = MaterialTheme.typography.h5

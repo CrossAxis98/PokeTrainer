@@ -184,7 +184,7 @@ fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavControlle
     }
     .addOnFailureListener { exception ->
             Log.e("DetailsScreen", "saveToFirebase() Fail")
-        }
+    }
 }
 
 @Composable

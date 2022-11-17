@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.poketrainer.data.Resource
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.repository.FirestoreRepository

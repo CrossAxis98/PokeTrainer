@@ -1,12 +1,9 @@
 package com.example.poketrainer.repository
 
-import android.util.Log
 import com.example.poketrainer.data.Resource
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine

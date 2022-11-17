@@ -1,12 +1,9 @@
 package com.example.poketrainer.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,16 +11,8 @@ import androidx.navigation.NavController
 import com.example.poketrainer.components.PokeTrainerAppBar
 import com.example.poketrainer.components.PokeTrainerFAB
 import com.example.poketrainer.components.PokemonCardInRow
-import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
-import com.example.poketrainer.screens.search.PokemonSearchViewModel
 import com.example.poketrainer.utils.ShowBars
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun HomeScreen(

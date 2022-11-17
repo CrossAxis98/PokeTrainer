@@ -42,8 +42,10 @@ import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.flow.merge
 
 @Composable
 fun DetailsScreen(
@@ -170,7 +172,7 @@ fun PokemonSaveSection(
 
 fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavController) {
     val db = Firebase.firestore
-    db.collection("pokemons").add(
+    db.collection("pokemons").document(currentPokemon.number.toString()).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
             imageUrl = currentPokemon.imageUrl,
@@ -183,7 +185,7 @@ fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavControlle
         }
     }
     .addOnFailureListener { exception ->
-            Log.e("DetailsScreen", "saveToFirebase() Fail")
+            Log.e("DetailsScreen", "saveToFirebase() Fail with $exception")
     }
 }
 

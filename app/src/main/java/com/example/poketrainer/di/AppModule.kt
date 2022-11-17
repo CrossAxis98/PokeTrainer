@@ -1,6 +1,7 @@
 package com.example.poketrainer.di
 
 import com.example.poketrainer.network.PokeApi
+import com.example.poketrainer.repository.FirestoreRepository
 import com.example.poketrainer.repository.PokeRepository
 import com.example.poketrainer.utils.Constants.BASE_URL
 import dagger.Module
@@ -14,6 +15,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideFirestoreRepository() = FirestoreRepository()
 
     @Singleton
     @Provides

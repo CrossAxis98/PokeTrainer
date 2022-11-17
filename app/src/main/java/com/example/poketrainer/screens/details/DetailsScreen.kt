@@ -1,19 +1,14 @@
 package com.example.poketrainer.screens.details
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
@@ -43,10 +38,12 @@ import com.example.poketrainer.model.Type
 import com.example.poketrainer.utils.getColorByPokemonType
 import com.example.poketrainer.utils.parseTypeToColor
 import com.example.poketrainer.R
+import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
-import com.example.poketrainer.screens.search.SearchScreen
 import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun DetailsScreen(
@@ -119,6 +116,8 @@ private fun PokemonDetailsMainScreen(
                         .background(MaterialTheme.colors.surface)
                         .padding(16.dp)
                         .align(Alignment.BottomCenter),
+                    colorOfTheType = colorByType,
+                    navController = navController
                 )
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -152,7 +151,53 @@ private fun PokemonDetailsMainScreen(
 }
 
 @Composable
-fun PokemonDetailSection(pokemonInfo: Pokemon, modifier: Modifier) {
+fun PokemonSaveSection(
+    colorOfTheType: Color,
+    currentPokemon: PokemonBasicInfo,
+    navController: NavController
+) {
+    TextButton(
+        modifier = Modifier.padding(top = 10.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
+        shape = CircleShape,
+        border = BorderStroke(3.dp, colorOfTheType),
+        onClick = { saveToFirebase(currentPokemon, navController) },
+        contentPadding = PaddingValues(10.dp)
+    ) {
+            Text(text = "Wanna catch!")
+    }
+}
+
+fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavController) {
+    val db = Firebase.firestore
+    db.collection("pokemons").add(
+        PokemonBasicInfo(
+            name = currentPokemon.name,
+            imageUrl = currentPokemon.imageUrl,
+            number = currentPokemon.number
+        )
+    )
+    .addOnCompleteListener{ task ->
+        if (task.isSuccessful) {
+            navController.navigate(PokeTrainerScreens.HomeScreen.name)
+        }
+    }
+    .addOnFailureListener { exception ->
+            Log.e("DetailsScreen", "saveToFirebase() Fail")
+        }
+}
+
+@Composable
+fun PokemonDetailSection(
+    pokemonInfo: Pokemon,
+    modifier: Modifier,
+    colorOfTheType: Color,
+    navController: NavController
+) {
+    val pokemonName = pokemonInfo.name!!
+    val pokemonId = pokemonInfo.id!!
+    val pokemonImageUrl = pokemonInfo.sprites!!.front_default
+    val currentPokemon = PokemonBasicInfo(pokemonName, pokemonImageUrl, pokemonId)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -161,7 +206,7 @@ fun PokemonDetailSection(pokemonInfo: Pokemon, modifier: Modifier) {
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "#${pokemonInfo.id} ${pokemonInfo.name!!.replaceFirstChar { it.uppercase() }}",
+            text = "#${pokemonId} ${pokemonName.replaceFirstChar {it.uppercase() }}",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
@@ -173,6 +218,7 @@ fun PokemonDetailSection(pokemonInfo: Pokemon, modifier: Modifier) {
             pokemonHeight = pokemonInfo.height!!
         )
         PokemonBaseStats(pokemonInfo = pokemonInfo)
+        PokemonSaveSection(colorOfTheType, currentPokemon, navController)
     }
 }
 

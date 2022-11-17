@@ -23,7 +23,6 @@ class LoginViewModel: ViewModel() {
                         Toast.makeText(context, "Hi, $name!", Toast.LENGTH_SHORT).show()
                         home.invoke()
                     } else {
-                        Log.d("XXX2", "Error ${task.exception}")
                         Toast.makeText(context, "Failed to create an account", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -39,7 +38,6 @@ class LoginViewModel: ViewModel() {
                         Toast.makeText(context, "Hi, $name!", Toast.LENGTH_SHORT).show()
                         home.invoke()
                     } else {
-                        Log.d("XXX3", "Error ${task.exception}")
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_LONG).show()
                     }
                 }

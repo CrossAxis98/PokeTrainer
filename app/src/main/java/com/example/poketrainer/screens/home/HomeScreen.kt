@@ -20,7 +20,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val pokemonList by remember { viewModel.pokemonList }
-    val isLoading by remember  { viewModel.isLoading }
+    val isLoading by remember { viewModel.isLoading }
 
     ShowBars(isRequiredToShowBars = true)
 
@@ -28,40 +28,66 @@ fun HomeScreen(
         modifier = Modifier.padding(10.dp),
         topBar = {
             PokeTrainerAppBar(
-            isHomeScreen = true,
-            navController = navController
-        ) },
+                isHomeScreen = true,
+                navController = navController
+            )
+        },
         floatingActionButton = {
             PokeTrainerFAB() {
                 navController.navigate(PokeTrainerScreens.SearchScreen.name)
             }
         }
     ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                Text(
-                    text = "Pokemons you want to catch:",
-                    style = MaterialTheme.typography.h5
-                )
-                if (isLoading) {
-                    CircularProgressIndicator()
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                text = "Pokemons you want to catch:",
+                style = MaterialTheme.typography.h5
+            )
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                if (pokemonList.isEmpty()) {
+                    Text(
+                        text = "No pokemons yet",
+                    )
                 } else {
                     LazyRow {
                         items(pokemonList.size) { index ->
-                            PokemonCardInRow(pokemon = pokemonList[index], navController = navController)
+                            PokemonCardInRow(
+                                pokemon = pokemonList[index],
+                                navController = navController
+                            )
                         }
                     }
                 }
-                Text(
-                    text = "Pokemons you've already caught:",
-                    style = MaterialTheme.typography.h5
-                )
             }
+            Text(
+                text = "Pokemons you've already caught:",
+                style = MaterialTheme.typography.h5
+            )
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                if (pokemonList.isEmpty()) {
+                    Text(
+                        text = "No pokemons yet",
+                    )
+                } else {
+                    LazyRow {
+                        items(pokemonList.size) { index ->
+                            PokemonCardInRow(
+                                pokemon = pokemonList[index],
+                                navController = navController
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
-
 

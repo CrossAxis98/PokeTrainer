@@ -28,8 +28,8 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
         viewModelScope.launch {
             when (val response = repository.getAllPokemonsFromFirestore()) {
                 is Resource.Success -> {
-                    pokemonList.value = response.data!!
-                    if (pokemonList.value.isNotEmpty()) isLoading.value = false
+                    pokemonList.value = response.data!!.sortedBy { pokemonBasicInfo -> pokemonBasicInfo.number }
+                    isLoading.value = false
                 }
                 is Resource.Error -> {
                     loadError = response.message!!

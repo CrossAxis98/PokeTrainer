@@ -42,15 +42,15 @@ import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.merge
 
 @Composable
 fun DetailsScreen(
     pokemonName: String,
     navController: NavController,
+    isMarkedAsWannaCatch: Boolean,
+    isCaught: Boolean,
     topPadding: Dp = 50.dp,
     pokemonImageSize: Dp = 100.dp,
     viewModel: DetailsViewModel = hiltViewModel()
@@ -68,13 +68,14 @@ fun DetailsScreen(
     val pokemonInfo = produceState<Resource<Pokemon>>(initialValue = Resource.Loading()) {
      value = viewModel.getPokemonDetails(pokemonName)
     }.value
-//    val type = pokemonInfo.data!!.types!!.first().type.name
     PokemonDetailsMainScreen(
         pokemonInfo,
         navController,
         topPadding,
         pokemonImageSize,
-        imageLoader
+        imageLoader,
+        isMarkedAsWannaCatch,
+        isCaught
     )
 }
 
@@ -84,7 +85,9 @@ private fun PokemonDetailsMainScreen(
     navController: NavController,
     topPadding: Dp,
     pokemonImageSize: Dp,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    isMarkedAsWannaCatch: Boolean,
+    isCaught: Boolean
 ) {
     when (pokemonInfo) {
         is Resource.Success -> {
@@ -119,7 +122,9 @@ private fun PokemonDetailsMainScreen(
                         .padding(16.dp)
                         .align(Alignment.BottomCenter),
                     colorOfTheType = colorByType,
-                    navController = navController
+                    navController = navController,
+                    isMarkedAsWannaCatch = isMarkedAsWannaCatch,
+                    isCaught = isCaught
                 )
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -153,6 +158,24 @@ private fun PokemonDetailsMainScreen(
 }
 
 @Composable
+fun CaughtButton(
+    colorOfTheType: Color,
+    currentPokemon: PokemonBasicInfo,
+    navController: NavController
+) {
+    TextButton(
+        modifier = Modifier.padding(top = 10.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
+        shape = CircleShape,
+        border = BorderStroke(3.dp, colorOfTheType),
+        onClick = { markAsCaught(currentPokemon, navController) },
+        contentPadding = PaddingValues(10.dp)
+    ) {
+        Text(text = "Mark as caught")
+    }
+}
+
+@Composable
 fun PokemonSaveSection(
     colorOfTheType: Color,
     currentPokemon: PokemonBasicInfo,
@@ -170,13 +193,35 @@ fun PokemonSaveSection(
     }
 }
 
+fun markAsCaught(currentPokemon: PokemonBasicInfo, navController: NavController) {
+    val db = Firebase.firestore
+    db.collection("pokemons").document(currentPokemon.number.toString()).set(
+        PokemonBasicInfo(
+            name = currentPokemon.name,
+            imageUrl = currentPokemon.imageUrl,
+            number = currentPokemon.number,
+            isMarkedAsWannaCatch = true,
+            isMarkedAsCaught = true
+        )
+    )
+        .addOnCompleteListener{ task ->
+            if (task.isSuccessful) {
+                navController.navigate(PokeTrainerScreens.HomeScreen.name)
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.e("DetailsScreen", "saveToFirebase() Fail with $exception")
+        }
+}
+
 fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavController) {
     val db = Firebase.firestore
     db.collection("pokemons").document(currentPokemon.number.toString()).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
             imageUrl = currentPokemon.imageUrl,
-            number = currentPokemon.number
+            number = currentPokemon.number,
+            isMarkedAsWannaCatch = true
         )
     )
     .addOnCompleteListener{ task ->
@@ -194,7 +239,9 @@ fun PokemonDetailSection(
     pokemonInfo: Pokemon,
     modifier: Modifier,
     colorOfTheType: Color,
-    navController: NavController
+    navController: NavController,
+    isMarkedAsWannaCatch: Boolean,
+    isCaught: Boolean
 ) {
     val pokemonName = pokemonInfo.name!!
     val pokemonId = pokemonInfo.id!!
@@ -208,7 +255,7 @@ fun PokemonDetailSection(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "#${pokemonId} ${pokemonName.replaceFirstChar {it.uppercase() }}",
+            text = "#${pokemonId} ${pokemonName.replaceFirstChar { it.uppercase() }}",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
@@ -220,7 +267,21 @@ fun PokemonDetailSection(
             pokemonHeight = pokemonInfo.height!!
         )
         PokemonBaseStats(pokemonInfo = pokemonInfo)
-        PokemonSaveSection(colorOfTheType, currentPokemon, navController)
+        if (isMarkedAsWannaCatch && !isCaught) {
+            CaughtButton(
+                colorOfTheType,
+                currentPokemon,
+                navController
+            )
+        } else if (isCaught) {
+            Text(text = "Cought at 19.11.2022")
+        } else {
+            PokemonSaveSection(
+                colorOfTheType,
+                currentPokemon,
+                navController
+            )
+        }
     }
 }
 

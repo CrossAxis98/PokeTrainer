@@ -56,12 +56,12 @@ class PokemonSearchViewModel @Inject constructor(private val repository: PokeRep
                         loadError.value = pokemon.message.toString()
                     }
                     else -> {
-                        Log.e(tagForLogging, "XXX Unexpected behavior in getAllPokemons()")
+                        Log.e(tagForLogging, "Unexpected behavior in getAllPokemons()")
                     }
                 }
             } catch (exception: Exception) {
                 isLoading.value = false
-                Log.e(tagForLogging, "XXX searchSpecifiedPokemon(): ${exception.message.toString()}")
+                Log.e(tagForLogging, "searchSpecifiedPokemon(): ${exception.message.toString()}")
             }
         }
     }

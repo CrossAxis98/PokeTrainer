@@ -15,6 +15,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val repository: FirestoreRepository)
     : ViewModel() {
 
+    val TAG = "HomeViewModel"
     val isLoading = mutableStateOf(false)
     private var loadError = ""
     val pokemonList = mutableStateOf<List<PokemonBasicInfo>>(emptyList())
@@ -36,7 +37,7 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
                     isLoading.value = false
                 }
                 else -> {
-                    Log.e("XXX", "getAllPokemonsFromFirestore() Unexpected response from firestore")
+                    Log.e(TAG, "getAllPokemonsFromFirestore() Unexpected response from firestore")
                 }
             }
         }

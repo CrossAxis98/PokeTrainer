@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.example.poketrainer.components.PokeTrainerAppBar
 import com.example.poketrainer.components.PokeTrainerFAB
 import com.example.poketrainer.components.PokemonCardInRow
+import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.ShowBars
 
@@ -19,8 +20,10 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val pokemonList by remember { viewModel.pokemonList }
+    val pokemonsList by remember { viewModel.pokemonList }
     val isLoading by remember { viewModel.isLoading }
+    var pokemonsToCatchList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
+    var pokemonsCaughtList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
 
     ShowBars(isRequiredToShowBars = true)
 
@@ -44,21 +47,24 @@ fun HomeScreen(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
-                text = "Pokemons you want to catch:",
+                text = "Pokemons you've already caught:",
                 style = MaterialTheme.typography.h5
             )
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
-                if (pokemonList.isEmpty()) {
+                pokemonsCaughtList = pokemonsList.filter { pokemon ->
+                    pokemon.isMarkedAsCaught
+                }
+                if (pokemonsCaughtList.isEmpty()) {
                     Text(
                         text = "No pokemons yet",
                     )
                 } else {
                     LazyRow {
-                        items(pokemonList.size) { index ->
+                        items(pokemonsCaughtList.size) { index ->
                             PokemonCardInRow(
-                                pokemon = pokemonList[index],
+                                pokemon = pokemonsCaughtList[index],
                                 navController = navController
                             )
                         }
@@ -66,21 +72,24 @@ fun HomeScreen(
                 }
             }
             Text(
-                text = "Pokemons you've already caught:",
+                text = "Pokemons you want to catch:",
                 style = MaterialTheme.typography.h5
             )
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
-                if (pokemonList.isEmpty()) {
+                pokemonsToCatchList = pokemonsList.filter { pokemon ->
+                    pokemon.isMarkedAsWannaCatch && !pokemon.isMarkedAsCaught
+                }
+                if (pokemonsToCatchList.isEmpty()) {
                     Text(
                         text = "No pokemons yet",
                     )
                 } else {
                     LazyRow {
-                        items(pokemonList.size) { index ->
+                        items(pokemonsToCatchList.size) { index ->
                             PokemonCardInRow(
-                                pokemon = pokemonList[index],
+                                pokemon = pokemonsToCatchList[index],
                                 navController = navController
                             )
                         }

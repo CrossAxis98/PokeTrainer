@@ -1,6 +1,7 @@
 package com.example.poketrainer.components
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.BorderStroke
@@ -286,7 +287,9 @@ fun PokemonCardInRow(
             .padding(vertical = 10.dp, horizontal = 4.dp)
             .clickable {
                 navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
-                        pokemonName.replaceFirstChar { it.lowercase() })
+                        pokemonName.replaceFirstChar { it.lowercase() } +
+                        "/${pokemon.isMarkedAsWannaCatch}" +
+                        "/${pokemon.isMarkedAsCaught}")
             },
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)

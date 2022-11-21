@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'com.example.poketrainer'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.poketrainer"
         minSdk 28
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -105,4 +105,5 @@ dependencies {
     // systemUiController
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.15.0"
 
+    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.9.0"
 }

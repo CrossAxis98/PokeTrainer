@@ -44,12 +44,18 @@ import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun DetailsScreen(
     pokemonName: String,
     navController: NavController,
     isMarkedAsWannaCatch: Boolean,
+    catchDate: String,
     isCaught: Boolean,
     topPadding: Dp = 50.dp,
     pokemonImageSize: Dp = 100.dp,
@@ -75,7 +81,8 @@ fun DetailsScreen(
         pokemonImageSize,
         imageLoader,
         isMarkedAsWannaCatch,
-        isCaught
+        isCaught,
+        catchDate
     )
 }
 
@@ -87,7 +94,8 @@ private fun PokemonDetailsMainScreen(
     pokemonImageSize: Dp,
     imageLoader: ImageLoader,
     isMarkedAsWannaCatch: Boolean,
-    isCaught: Boolean
+    isCaught: Boolean,
+    catchDate: String
 ) {
     when (pokemonInfo) {
         is Resource.Success -> {
@@ -124,7 +132,8 @@ private fun PokemonDetailsMainScreen(
                     colorOfTheType = colorByType,
                     navController = navController,
                     isMarkedAsWannaCatch = isMarkedAsWannaCatch,
-                    isCaught = isCaught
+                    isCaught = isCaught,
+                    catchDate = catchDate
                 )
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -163,12 +172,37 @@ fun CaughtButton(
     currentPokemon: PokemonBasicInfo,
     navController: NavController
 ) {
+    var pickedDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+    val formattedDate: String by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("dd MMM yyyy")
+                .format(pickedDate)
+        }
+    }
+    val dialogState = rememberMaterialDialogState()
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        }
+    ) {
+        datepicker { date ->
+            pickedDate = date
+            markAsCaught(currentPokemon, navController, formattedDate)
+        }
+    }
     TextButton(
         modifier = Modifier.padding(top = 10.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
         shape = CircleShape,
         border = BorderStroke(3.dp, colorOfTheType),
-        onClick = { markAsCaught(currentPokemon, navController) },
+        onClick = {
+            dialogState.show()
+        },
         contentPadding = PaddingValues(10.dp)
     ) {
         Text(text = "Mark as caught")
@@ -193,7 +227,11 @@ fun PokemonSaveSection(
     }
 }
 
-fun markAsCaught(currentPokemon: PokemonBasicInfo, navController: NavController) {
+fun markAsCaught(
+    currentPokemon: PokemonBasicInfo,
+    navController: NavController,
+    formattedDate: String
+) {
     val db = Firebase.firestore
     db.collection("pokemons").document(currentPokemon.number.toString()).set(
         PokemonBasicInfo(
@@ -201,7 +239,8 @@ fun markAsCaught(currentPokemon: PokemonBasicInfo, navController: NavController)
             imageUrl = currentPokemon.imageUrl,
             number = currentPokemon.number,
             isMarkedAsWannaCatch = true,
-            isMarkedAsCaught = true
+            isMarkedAsCaught = true,
+            dateOfCatch = formattedDate
         )
     )
         .addOnCompleteListener{ task ->
@@ -241,7 +280,8 @@ fun PokemonDetailSection(
     colorOfTheType: Color,
     navController: NavController,
     isMarkedAsWannaCatch: Boolean,
-    isCaught: Boolean
+    isCaught: Boolean,
+    catchDate: String
 ) {
     val pokemonName = pokemonInfo.name!!
     val pokemonId = pokemonInfo.id!!
@@ -274,7 +314,7 @@ fun PokemonDetailSection(
                 navController
             )
         } else if (isCaught) {
-            Text(text = "Cought at 19.11.2022")
+            Text(text = "Cought at $catchDate")
         } else {
             PokemonSaveSection(
                 colorOfTheType,
@@ -400,8 +440,8 @@ fun PokemonDetailTopSection(
                 .size(36.dp)
                 .offset(16.dp, 16.dp)
                 .clickable {
-//                    navController.popBackStack()
-                    navController.navigate(PokeTrainerScreens.SearchScreen.name)
+                    navController.popBackStack()
+//                                    navController.navigate(PokeTrainerScreens.SearchScreen.name)
                 }
         )
     }

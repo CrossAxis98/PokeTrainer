@@ -289,7 +289,8 @@ fun PokemonCardInRow(
                 navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
                         pokemonName.replaceFirstChar { it.lowercase() } +
                         "/${pokemon.isMarkedAsWannaCatch}" +
-                        "/${pokemon.isMarkedAsCaught}")
+                        "/${pokemon.isMarkedAsCaught}" +
+                        "/${pokemon.dateOfCatch}")
             },
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)

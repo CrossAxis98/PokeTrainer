@@ -34,13 +34,14 @@ fun PokeTrainerNavigation() {
             SearchScreen(navController)
         }
         val detailsScreenRoute = "${PokeTrainerScreens.DetailScreen.name}/" +
-                "{pokemonName}/{isMarkedAsWannaCatch}/{isCaught}"
+                "{pokemonName}/{isMarkedAsWannaCatch}/{isCaught}/{catchDate}"
         composable(
             detailsScreenRoute,
             arguments = listOf(
                 navArgument("pokemonName") { type = NavType.StringType },
                 navArgument("isMarkedAsWannaCatch") { type = NavType.BoolType},
-                navArgument("isCaught") { type = NavType.BoolType}
+                navArgument("isCaught") { type = NavType.BoolType},
+                navArgument("catchDate") { type = NavType.StringType}
             )
         ) { backStackEntry ->
             DetailsScreen(
@@ -48,9 +49,8 @@ fun PokeTrainerNavigation() {
                 navController = navController,
                 isMarkedAsWannaCatch = backStackEntry.arguments!!.getBoolean("isMarkedAsWannaCatch"),
                 isCaught = backStackEntry.arguments!!.getBoolean("isCaught"),
+                catchDate = backStackEntry.arguments!!.getString("catchDate").toString()
                 )
-            Log.d("XXX", "Pokemon ${backStackEntry.arguments!!.getString("pokemonName").toString()} " +
-                    "is marked ${backStackEntry.arguments!!.getString("isMarkedAsWannaCatch")}")
         }
     }
 }

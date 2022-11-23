@@ -1,7 +1,5 @@
 package com.example.poketrainer.model.pokeList
 
-import java.time.LocalDate
-
 data class PokemonBasicInfo(
     val name: String = "",
     val imageUrl: String = "",

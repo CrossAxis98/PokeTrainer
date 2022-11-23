@@ -38,6 +38,7 @@ import com.example.poketrainer.model.Type
 import com.example.poketrainer.utils.getColorByPokemonType
 import com.example.poketrainer.utils.parseTypeToColor
 import com.example.poketrainer.R
+import com.example.poketrainer.components.ButtonWithColorAsType
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.parseStatToAbbr
@@ -166,67 +167,6 @@ private fun PokemonDetailsMainScreen(
     }
 }
 
-@Composable
-fun CaughtButton(
-    colorOfTheType: Color,
-    currentPokemon: PokemonBasicInfo,
-    navController: NavController
-) {
-    var pickedDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-    val formattedDate: String by remember {
-        derivedStateOf {
-            DateTimeFormatter
-                .ofPattern("dd MMM yyyy")
-                .format(pickedDate)
-        }
-    }
-    val dialogState = rememberMaterialDialogState()
-    MaterialDialog(
-        dialogState = dialogState,
-        buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
-        }
-    ) {
-        datepicker { date ->
-            pickedDate = date
-            markAsCaught(currentPokemon, navController, formattedDate)
-        }
-    }
-    TextButton(
-        modifier = Modifier.padding(top = 10.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
-        shape = CircleShape,
-        border = BorderStroke(3.dp, colorOfTheType),
-        onClick = {
-            dialogState.show()
-        },
-        contentPadding = PaddingValues(10.dp)
-    ) {
-        Text(text = "Mark as caught")
-    }
-}
-
-@Composable
-fun PokemonSaveSection(
-    colorOfTheType: Color,
-    currentPokemon: PokemonBasicInfo,
-    navController: NavController
-) {
-    TextButton(
-        modifier = Modifier.padding(top = 10.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
-        shape = CircleShape,
-        border = BorderStroke(3.dp, colorOfTheType),
-        onClick = { saveToFirebase(currentPokemon, navController) },
-        contentPadding = PaddingValues(10.dp)
-    ) {
-            Text(text = "Wanna catch!")
-    }
-}
-
 fun markAsCaught(
     currentPokemon: PokemonBasicInfo,
     navController: NavController,
@@ -287,6 +227,31 @@ fun PokemonDetailSection(
     val pokemonId = pokemonInfo.id!!
     val pokemonImageUrl = pokemonInfo.sprites!!.front_default
     val currentPokemon = PokemonBasicInfo(pokemonName, pokemonImageUrl, pokemonId)
+
+    var pickedDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+    val formattedDate: String by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("dd MMM yyyy")
+                .format(pickedDate)
+        }
+    }
+    val dialogState = rememberMaterialDialogState()
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton("Ok")
+            negativeButton("Cancel")
+        }
+    ) {
+        datepicker { date ->
+            pickedDate = date
+            markAsCaught(currentPokemon, navController, formattedDate)
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -308,19 +273,21 @@ fun PokemonDetailSection(
         )
         PokemonBaseStats(pokemonInfo = pokemonInfo)
         if (isMarkedAsWannaCatch && !isCaught) {
-            CaughtButton(
+            ButtonWithColorAsType(
                 colorOfTheType,
-                currentPokemon,
-                navController
-            )
+                buttonText = "Mark as caught"
+            ) {
+                dialogState.show()
+            }
         } else if (isCaught) {
             Text(text = "Cought at $catchDate")
         } else {
-            PokemonSaveSection(
-                colorOfTheType,
-                currentPokemon,
-                navController
-            )
+            ButtonWithColorAsType(
+                colorOfTheType = colorOfTheType,
+                buttonText = "Wanna catch!"
+            ) {
+                saveToFirebase(currentPokemon, navController)
+            }
         }
     }
 }
@@ -441,7 +408,6 @@ fun PokemonDetailTopSection(
                 .offset(16.dp, 16.dp)
                 .clickable {
                     navController.popBackStack()
-//                                    navController.navigate(PokeTrainerScreens.SearchScreen.name)
                 }
         )
     }

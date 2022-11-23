@@ -334,3 +334,24 @@ fun PokeTrainerFAB(onClick: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun ButtonWithColorAsType(
+    colorOfTheType: Color,
+    buttonText: String,
+    onClickAction: () -> Unit
+) {
+
+    TextButton(
+        modifier = Modifier.padding(top = 10.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black, contentColor = Color.White),
+        shape = CircleShape,
+        border = BorderStroke(3.dp, colorOfTheType),
+        onClick = {
+            onClickAction.invoke()
+        },
+        contentPadding = PaddingValues(10.dp)
+    ) {
+        Text(text = buttonText)
+    }
+}

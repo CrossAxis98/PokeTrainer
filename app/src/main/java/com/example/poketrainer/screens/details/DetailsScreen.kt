@@ -140,16 +140,19 @@ private fun PokemonDetailsMainScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    pokemonInfo.data.sprites?.let {
-                        AsyncImage(
-                            model = it.versions.generationV.blackWhite.animated.front_default,
-                            contentDescription = "Pokemon image",
-                            imageLoader = imageLoader,
-                            modifier = Modifier
-                                .size(pokemonImageSize)
-                                .offset(y = topPadding)
-                        )
+                    val gifUrl = if (pokemonInfo.data.sprites?.versions!!.generationV.blackWhite.animated.front_default != null) {
+                        pokemonInfo.data.sprites.versions.generationV.blackWhite.animated.front_default
+                    } else {
+                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/129.gif"
                     }
+                    AsyncImage(
+                        model = gifUrl,
+                        contentDescription = "Pokemon image",
+                        imageLoader = imageLoader,
+                        modifier = Modifier
+                            .size(pokemonImageSize)
+                            .offset(y = topPadding)
+                    )
                 }
             }
         }

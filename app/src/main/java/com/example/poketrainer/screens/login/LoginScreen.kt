@@ -65,11 +65,15 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = androi
 
                 if (isNewUser.value) {
                     viewModel.createNewUserAccount(userEmail, userPassword, context) {
-                        navController.navigate(PokeTrainerScreens.HomeScreen.name)
+                        navController.navigate(PokeTrainerScreens.HomeScreen.name) {
+                            popUpTo(0)
+                        }
                     }
                 } else {
                     viewModel.signIn(userEmail, userPassword, context) {
-                        navController.navigate(PokeTrainerScreens.HomeScreen.name)
+                        navController.navigate(PokeTrainerScreens.HomeScreen.name) {
+                            popUpTo(0)
+                        }
                     }
                 }
             }

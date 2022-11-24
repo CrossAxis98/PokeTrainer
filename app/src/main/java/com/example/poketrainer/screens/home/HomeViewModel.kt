@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.poketrainer.data.Resource
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.repository.FirestoreRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
     val isLoading = mutableStateOf(false)
     private var loadError = ""
     val pokemonList = mutableStateOf<List<PokemonBasicInfo>>(emptyList())
+    val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
 
     init {
         getAllPokemonsFromFirestore()
@@ -29,7 +31,8 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
         viewModelScope.launch {
             when (val response = repository.getAllPokemonsFromFirestore()) {
                 is Resource.Success -> {
-                    pokemonList.value = response.data!!.sortedBy { pokemonBasicInfo -> pokemonBasicInfo.number }
+                    pokemonList.value = response.data!!.filter { pokemonBasicInfo -> pokemonBasicInfo.userId == currentUserId }
+                        .sortedBy { pokemonBasicInfo -> pokemonBasicInfo.number }
                     isLoading.value = false
                 }
                 is Resource.Error -> {

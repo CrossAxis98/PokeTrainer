@@ -43,6 +43,7 @@ import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.parseStatToAbbr
 import com.example.poketrainer.utils.parseStatToColor
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -176,6 +177,7 @@ fun markAsCaught(
     formattedDate: String
 ) {
     val db = Firebase.firestore
+    val currentUser = FirebaseAuth.getInstance().currentUser
     db.collection("pokemons").document(currentPokemon.number.toString()).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
@@ -183,12 +185,15 @@ fun markAsCaught(
             number = currentPokemon.number,
             isMarkedAsWannaCatch = true,
             isMarkedAsCaught = true,
-            dateOfCatch = formattedDate
+            dateOfCatch = formattedDate,
+            userId = currentUser!!.uid
         )
     )
         .addOnCompleteListener{ task ->
             if (task.isSuccessful) {
-                navController.navigate(PokeTrainerScreens.HomeScreen.name)
+                navController.navigate(PokeTrainerScreens.HomeScreen.name) {
+                    popUpTo(0)
+                }
             }
         }
         .addOnFailureListener { exception ->
@@ -198,17 +203,21 @@ fun markAsCaught(
 
 fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavController) {
     val db = Firebase.firestore
+    val currentUser = FirebaseAuth.getInstance().currentUser
     db.collection("pokemons").document(currentPokemon.number.toString()).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
             imageUrl = currentPokemon.imageUrl,
             number = currentPokemon.number,
-            isMarkedAsWannaCatch = true
+            isMarkedAsWannaCatch = true,
+            userId = currentUser!!.uid
         )
     )
     .addOnCompleteListener{ task ->
         if (task.isSuccessful) {
-            navController.navigate(PokeTrainerScreens.HomeScreen.name)
+            navController.navigate(PokeTrainerScreens.HomeScreen.name) {
+                popUpTo(0)
+            }
         }
     }
     .addOnFailureListener { exception ->

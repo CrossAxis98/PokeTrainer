@@ -24,6 +24,7 @@ fun HomeScreen(
     val isLoading by remember { viewModel.isLoading }
     var pokemonsToCatchList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
     var pokemonsCaughtList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
+    var isProfileMenuExpanded by remember { mutableStateOf(false) }
 
     ShowBars(isRequiredToShowBars = true)
 
@@ -32,7 +33,10 @@ fun HomeScreen(
         topBar = {
             PokeTrainerAppBar(
                 isHomeScreen = true,
-                navController = navController
+                navController = navController,
+                isProfileMenuExpanded = isProfileMenuExpanded,
+                onProfileMenuClick = { isProfileMenuExpanded = !isProfileMenuExpanded},
+                onProfileMenuDismissRequest = { isProfileMenuExpanded = false }
             )
         },
         floatingActionButton = {
@@ -40,9 +44,10 @@ fun HomeScreen(
                 navController.navigate(PokeTrainerScreens.SearchScreen.name)
             }
         }
-    ) {
+    ) { padding ->
         Column(
             modifier = Modifier
+                .padding(padding)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {

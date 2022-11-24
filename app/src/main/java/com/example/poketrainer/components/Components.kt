@@ -47,6 +47,7 @@ import com.example.poketrainer.model.Pokemon
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.getColorByPokemonType
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
@@ -101,6 +102,9 @@ fun PokeTrainerAppBar(
     isHomeScreen: Boolean = false,
     navController: NavController,
     icon: ImageVector? = null,
+    isProfileMenuExpanded: Boolean = false,
+    onProfileMenuClick: () -> Unit = {},
+    onProfileMenuDismissRequest: () -> Unit = {},
     onArrowBackClicked: () -> Unit = {}
 ) {
     TopAppBar(
@@ -130,11 +134,28 @@ fun PokeTrainerAppBar(
         //modifier = Modifier.,
         actions = {
             if (isHomeScreen) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onProfileMenuClick) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Person icon"
                     )
+                }
+                DropdownMenu(
+                    expanded = isProfileMenuExpanded,
+                    onDismissRequest = onProfileMenuDismissRequest
+                ) {
+                    DropdownMenuItem(onClick = {
+                        navController.navigate(PokeTrainerScreens.StatsScreen.name)
+                    }) {
+                        Text(text = "Profile")
+                    }
+                    DropdownMenuItem(onClick = {
+                        FirebaseAuth.getInstance().signOut().run {
+                            navController.navigate(PokeTrainerScreens.LoginScreen.name)
+                        }
+                    }) {
+                        Text(text = "Log out")
+                    }
                 }
             }
         } ,

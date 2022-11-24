@@ -1,6 +1,5 @@
 package com.example.poketrainer.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,6 +11,7 @@ import com.example.poketrainer.screens.details.DetailsScreen
 import com.example.poketrainer.screens.home.HomeScreen
 import com.example.poketrainer.screens.login.LoginScreen
 import com.example.poketrainer.screens.search.SearchScreen
+import com.example.poketrainer.screens.stats.StatsScreen
 
 @Composable
 fun PokeTrainerNavigation() {
@@ -51,6 +51,9 @@ fun PokeTrainerNavigation() {
                 isCaught = backStackEntry.arguments!!.getBoolean("isCaught"),
                 catchDate = backStackEntry.arguments!!.getString("catchDate").toString()
                 )
+        }
+        composable(PokeTrainerScreens.StatsScreen.name) {
+            StatsScreen(navController)
         }
     }
 }

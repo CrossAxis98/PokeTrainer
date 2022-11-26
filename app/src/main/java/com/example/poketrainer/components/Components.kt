@@ -7,6 +7,7 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -306,12 +308,19 @@ fun PokemonCardInRow(
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 4.dp)
-            .clickable {
-                navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
-                        pokemonName.replaceFirstChar { it.lowercase() } +
-                        "/${pokemon.isMarkedAsWannaCatch}" +
-                        "/${pokemon.isMarkedAsCaught}" +
-                        "/${pokemon.dateOfCatch}")
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
+                                pokemonName.replaceFirstChar { it.lowercase() } +
+                                "/${pokemon.isMarkedAsWannaCatch}" +
+                                "/${pokemon.isMarkedAsCaught}" +
+                                "/${pokemon.dateOfCatch}")
+                    },
+                    onLongPress = {
+
+                    }
+                )
             },
         elevation = 4.dp,
         shape = RoundedCornerShape(12.dp)

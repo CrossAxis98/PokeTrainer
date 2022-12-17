@@ -11,9 +11,9 @@ import androidx.navigation.NavController
 import com.example.poketrainer.components.PokeTrainerAppBar
 import com.example.poketrainer.components.PokeTrainerFAB
 import com.example.poketrainer.components.PokemonCardInRowEnableToDelete
+import com.example.poketrainer.components.ShowBars
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
-import com.example.poketrainer.utils.ShowBars
 
 @Composable
 fun HomeScreen(

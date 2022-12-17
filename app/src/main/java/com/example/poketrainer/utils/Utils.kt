@@ -1,20 +1,9 @@
 package com.example.poketrainer.utils
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.example.poketrainer.model.Stat
 import com.example.poketrainer.model.Type
 import com.example.poketrainer.ui.theme.*
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-
-@Composable
-fun ShowBars(isRequiredToShowBars: Boolean) {
-    rememberSystemUiController().apply {
-        this.isSystemBarsVisible = isRequiredToShowBars
-        this.isStatusBarVisible = isRequiredToShowBars
-        this.isNavigationBarVisible = isRequiredToShowBars
-    }
-}
 
 fun getColorByPokemonType(name: String): Color {
     return when (name) {

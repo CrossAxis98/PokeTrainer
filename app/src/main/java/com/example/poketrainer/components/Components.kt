@@ -51,11 +51,19 @@ import com.example.poketrainer.model.Pokemon
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.getColorByPokemonType
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-
+@Composable
+fun ShowBars(isRequiredToShowBars: Boolean) {
+    rememberSystemUiController().apply {
+        this.isSystemBarsVisible = isRequiredToShowBars
+        this.isStatusBarVisible = isRequiredToShowBars
+        this.isNavigationBarVisible = isRequiredToShowBars
+    }
+}
 
 @Composable
 fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
@@ -102,6 +110,35 @@ fun LogoText() {
         color = Color.Gray,
         style = MaterialTheme.typography.h5
     )
+}
+
+@Composable
+fun NewUserText(isNewUser: Boolean, onClick: () -> Unit) {
+    val newUserOrOldUserText = if (isNewUser) "Already have an account? " else "New user? "
+    val createAnAccountOrLoginText = if (isNewUser) "Login" else "Create an account"
+    Row {
+        Text(text = newUserOrOldUserText)
+        Text(
+            createAnAccountOrLoginText,
+            modifier = Modifier.clickable { onClick.invoke() },
+            color = Color.Blue.copy(alpha = 0.7f)
+        )
+    }
+}
+
+@Composable
+fun SubmitButton(
+    isNewUser: Boolean,
+    areCredentialsWrote: Boolean,
+    onButtonClick: () -> Unit = {}
+) {
+    val buttonText = if (isNewUser) "Registry" else "Login"
+    Button(
+        onClick = { onButtonClick.invoke() },
+        enabled = areCredentialsWrote
+    ) {
+        Text(text = buttonText)
+    }
 }
 
 @Composable

@@ -1,9 +1,7 @@
 package com.example.poketrainer.screens.login
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -11,36 +9,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.example.poketrainer.components.InputField
-import com.example.poketrainer.components.LogoText
-import com.example.poketrainer.components.PasswordInput
+import com.example.poketrainer.components.*
 import com.example.poketrainer.navigation.PokeTrainerScreens
-import com.example.poketrainer.utils.ShowBars
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    ShowBars(isRequiredToShowBars = true)
-
     val context = LocalContext.current
-
-    val email = rememberSaveable {
-        mutableStateOf("")
-    }
-    val password = rememberSaveable {
-        mutableStateOf("")
-    }
-    val isNewUser = rememberSaveable {
-        mutableStateOf(false)
-    }
+    val email = rememberSaveable { mutableStateOf("") }
+    val password = rememberSaveable { mutableStateOf("") }
+    val isNewUser = rememberSaveable { mutableStateOf(false) }
     val areCredentialsWrote = rememberSaveable(email.value, password.value) {
         mutableStateOf(
             email.value.isNotEmpty() && password.value.isNotEmpty()
         )
     }
 
+    ShowBars(isRequiredToShowBars = true)
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -84,31 +70,3 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = androi
     }
 }
 
-@Composable
-fun NewUserText(isNewUser: Boolean, onClick: () -> Unit) {
-    val newUserOrOldUserText = if (isNewUser) "Already have an account? " else "New user? "
-    val createAnAccountOrLoginText = if (isNewUser) "Login" else "Create an account"
-    Row {
-        Text(text = newUserOrOldUserText)
-        Text(
-            createAnAccountOrLoginText,
-            modifier = Modifier.clickable { onClick.invoke() },
-            color = Color.Blue.copy(alpha = 0.7f)
-        )
-    }
-}
-
-@Composable
-fun SubmitButton(
-    isNewUser: Boolean,
-    areCredentialsWrote: Boolean,
-    onButtonClick: () -> Unit = {}
-) {
-    val buttonText = if (isNewUser) "Registry" else "Login"
-    Button(
-        onClick = { onButtonClick.invoke() },
-        enabled = areCredentialsWrote
-    ) {
-        Text(text = buttonText)
-    }
-}

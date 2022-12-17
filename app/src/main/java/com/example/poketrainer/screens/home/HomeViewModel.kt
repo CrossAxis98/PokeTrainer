@@ -1,6 +1,8 @@
 package com.example.poketrainer.screens.home
 
+import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,11 +18,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val repository: FirestoreRepository)
     : ViewModel() {
 
-    val TAG = "HomeViewModel"
+    private val TAG = "HomeViewModel"
     val isLoading = mutableStateOf(false)
     private var loadError = ""
-    val pokemonList = mutableStateOf<List<PokemonBasicInfo>>(emptyList())
-    val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
+    @SuppressLint("MutableCollectionMutableState")
+    var pokemonList = mutableListOf<PokemonBasicInfo>()
+    private val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
 
     init {
         getAllPokemonsFromFirestore()
@@ -31,8 +34,8 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
         viewModelScope.launch {
             when (val response = repository.getAllPokemonsFromFirestore()) {
                 is Resource.Success -> {
-                    pokemonList.value = response.data!!.filter { pokemonBasicInfo -> pokemonBasicInfo.userId == currentUserId }
-                        .sortedBy { pokemonBasicInfo -> pokemonBasicInfo.number }
+                    pokemonList.addAll(response.data!!.filter { pokemonBasicInfo -> pokemonBasicInfo.userId == currentUserId }
+                        .sortedBy { pokemonBasicInfo -> pokemonBasicInfo.number })//.toMutableList()
                     isLoading.value = false
                 }
                 is Resource.Error -> {
@@ -41,6 +44,22 @@ class HomeViewModel @Inject constructor(private val repository: FirestoreReposit
                 }
                 else -> {
                     Log.e(TAG, "getAllPokemonsFromFirestore() Unexpected response from firestore")
+                }
+            }
+        }
+    }
+
+    fun removePokemonFromFirestore(pokemon: PokemonBasicInfo) {
+        isLoading.value = true
+        viewModelScope.launch {
+            when (repository.removePokemonFromFirestore(pokemon.number)) {
+                is Resource.Success -> {
+                    pokemonList.remove(pokemon)
+                    isLoading.value = false
+                }
+                else -> {
+                    Log.e(TAG, "removePokemonFromFirestore() Unexpected response from remove firestore")
+                    isLoading.value = false
                 }
             }
         }

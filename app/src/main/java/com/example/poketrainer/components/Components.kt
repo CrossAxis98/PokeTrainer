@@ -7,7 +7,10 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,12 +18,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -30,8 +29,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.ImageLoader
@@ -50,6 +52,10 @@ import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.getColorByPokemonType
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+
 
 @Composable
 fun PokeTrainerLogo(scale: Animatable<Float, AnimationVector1D>) {
@@ -293,6 +299,100 @@ fun PokemonCard(
                 text = pokemon.name.toString().replaceFirstChar { it.uppercase() },
                 fontWeight = FontWeight.SemiBold
             )
+        }
+    }
+}
+
+@Composable
+fun PokemonCardInRowEnableToDelete(
+    pokemon: PokemonBasicInfo,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    onRemove: () -> Unit = {}
+) {
+    val imageUrl = pokemon.imageUrl
+    val pokemonName = pokemon.name
+    val localDensity = LocalDensity.current
+    var offsetY by remember { mutableStateOf(0f) }
+    var cardHeightDp by remember { mutableStateOf(0.dp) }
+    var cardWidthDp by remember { mutableStateOf(0.dp) }
+    var deleteIconColor by remember { mutableStateOf(Color.Black) }
+
+    Card(
+        modifier = modifier
+            .padding(vertical = 10.dp, horizontal = 4.dp)
+            .onGloballyPositioned { coordinates ->
+                cardHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+                cardWidthDp = with(localDensity) { coordinates.size.width.toDp() }
+            },
+        elevation = 4.dp,
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Card(
+        modifier = Modifier
+            .clickable {
+                navController.navigate("${PokeTrainerScreens.DetailScreen.name}/" +
+                        pokemonName.replaceFirstChar { it.lowercase() } +
+                        "/${pokemon.isMarkedAsWannaCatch}" +
+                        "/${pokemon.isMarkedAsCaught}" +
+                        "/${pokemon.dateOfCatch}")
+            }
+            .offset { IntOffset(0, offsetY.roundToInt()) }
+            .draggable(
+                orientation = Orientation.Vertical,
+                state = rememberDraggableState { delta ->
+                    if (delta < 0) offsetY += delta
+                },
+                onDragStopped = { _ ->
+                    if (abs(offsetY) > 200) {
+                        onRemove()
+                    } else if (offsetY != 0f) {
+                        offsetY = 0f
+                    }
+                }
+            )
+        ) {
+            Column(
+                modifier = Modifier.background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black,
+                            Color.White
+                        )
+                    )
+                ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (abs(offsetY) > 200) {
+                    deleteIconColor = Color.Red
+                }
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Pokemon Image",
+                    modifier = Modifier.size(120.dp)
+                )
+                Text(
+                    text = pokemonName.replaceFirstChar { it.uppercase() },
+                    fontWeight = FontWeight.SemiBold,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        if (!offsetY.equals(0f)) {
+            Box(
+                modifier = Modifier
+                    .height(cardHeightDp)
+                    .width(cardWidthDp)
+                    .padding(bottom = 4.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete icon",
+                    tint = deleteIconColor
+                )
+            }
         }
     }
 }

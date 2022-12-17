@@ -23,7 +23,7 @@ fun StatsScreen(navController: NavController, homeViewModel: HomeViewModel = hil
     val name: String = FirebaseAuth.getInstance()
         .currentUser!!.email!!.split("@")[0]
         .replaceFirstChar { it.uppercase() }
-    val pokemonsList by remember { homeViewModel.pokemonList }
+    val pokemonsList = remember { homeViewModel.pokemonList }
     val pokemonsCaughtList = pokemonsList.filter { pokemonBasicInfo -> pokemonBasicInfo.isMarkedAsCaught  }
     val pokemonsToCatchList = pokemonsList.filter { pokemonBasicInfo ->
         pokemonBasicInfo.isMarkedAsWannaCatch && !pokemonBasicInfo.isMarkedAsCaught

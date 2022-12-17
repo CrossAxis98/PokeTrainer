@@ -1,5 +1,6 @@
 package com.example.poketrainer.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
@@ -11,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.poketrainer.components.PokeTrainerAppBar
 import com.example.poketrainer.components.PokeTrainerFAB
 import com.example.poketrainer.components.PokemonCardInRow
+import com.example.poketrainer.components.PokemonCardInRowEnableToDelete
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
 import com.example.poketrainer.utils.ShowBars
@@ -20,14 +22,13 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val pokemonsList by remember { viewModel.pokemonList }
+    val pokemonsList: MutableList<PokemonBasicInfo> = remember { viewModel.pokemonList }
     val isLoading by remember { viewModel.isLoading }
     var pokemonsToCatchList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
     var pokemonsCaughtList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
     var isProfileMenuExpanded by remember { mutableStateOf(false) }
-
+    
     ShowBars(isRequiredToShowBars = true)
-
     Scaffold(
         modifier = Modifier.padding(10.dp),
         topBar = {
@@ -67,11 +68,17 @@ fun HomeScreen(
                     )
                 } else {
                     LazyRow {
-                        items(pokemonsCaughtList.size) { index ->
-                            PokemonCardInRow(
+                        items(pokemonsCaughtList.size, key = { index ->
+                            pokemonsCaughtList[index].number
+                        }) { index ->
+                            PokemonCardInRowEnableToDelete(
                                 pokemon = pokemonsCaughtList[index],
                                 navController = navController
-                            )
+                            ) {
+                                viewModel.removePokemonFromFirestore(
+                                    pokemonsCaughtList[index]
+                                )
+                            }
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 package com.example.poketrainer.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
@@ -11,7 +10,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.poketrainer.components.PokeTrainerAppBar
 import com.example.poketrainer.components.PokeTrainerFAB
-import com.example.poketrainer.components.PokemonCardInRow
 import com.example.poketrainer.components.PokemonCardInRowEnableToDelete
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
 import com.example.poketrainer.navigation.PokeTrainerScreens
@@ -99,11 +97,17 @@ fun HomeScreen(
                     )
                 } else {
                     LazyRow {
-                        items(pokemonsToCatchList.size) { index ->
-                            PokemonCardInRow(
+                        items(pokemonsToCatchList.size, key = { index ->
+                            pokemonsToCatchList[index].number
+                        }) { index ->
+                            PokemonCardInRowEnableToDelete(
                                 pokemon = pokemonsToCatchList[index],
                                 navController = navController
-                            )
+                            ) {
+                                viewModel.removePokemonFromFirestore(
+                                    pokemonsToCatchList[index]
+                                )
+                            }
                         }
                     }
                 }

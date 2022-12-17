@@ -341,9 +341,10 @@ fun PokemonCardInRowEnableToDelete(
             .draggable(
                 orientation = Orientation.Vertical,
                 state = rememberDraggableState { delta ->
-                    if (delta < 0) offsetY += delta
+                    if (offsetY <= 0) offsetY += delta
                 },
                 onDragStopped = { _ ->
+                    Log.d("XXX", "Calling on drag stopped")
                     if (abs(offsetY) > 200) {
                         onRemove()
                     } else if (offsetY != 0f) {
@@ -366,6 +367,8 @@ fun PokemonCardInRowEnableToDelete(
             ) {
                 if (abs(offsetY) > 200) {
                     deleteIconColor = Color.Red
+                } else {
+                    deleteIconColor = Color.Black
                 }
                 AsyncImage(
                     model = imageUrl,

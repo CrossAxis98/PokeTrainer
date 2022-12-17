@@ -27,7 +27,7 @@ fun HomeScreen(
     var pokemonsToCatchList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
     var pokemonsCaughtList by remember { mutableStateOf(emptyList<PokemonBasicInfo>()) }
     var isProfileMenuExpanded by remember { mutableStateOf(false) }
-    
+
     ShowBars(isRequiredToShowBars = true)
     Scaffold(
         modifier = Modifier.padding(10.dp),

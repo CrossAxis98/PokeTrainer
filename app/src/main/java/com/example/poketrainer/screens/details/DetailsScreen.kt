@@ -177,8 +177,8 @@ fun markAsCaught(
     formattedDate: String
 ) {
     val db = Firebase.firestore
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    db.collection("pokemons").document(currentPokemon.number.toString()).set(
+    val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
+    db.collection("pokemons").document("${currentPokemon.number}" + currentUserId).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
             imageUrl = currentPokemon.imageUrl,
@@ -186,7 +186,7 @@ fun markAsCaught(
             isMarkedAsWannaCatch = true,
             isMarkedAsCaught = true,
             dateOfCatch = formattedDate,
-            userId = currentUser!!.uid
+            userId = currentUserId
         )
     )
         .addOnCompleteListener{ task ->
@@ -204,7 +204,7 @@ fun markAsCaught(
 fun saveToFirebase(currentPokemon: PokemonBasicInfo, navController: NavController) {
     val db = Firebase.firestore
     val currentUser = FirebaseAuth.getInstance().currentUser
-    db.collection("pokemons").document(currentPokemon.number.toString()).set(
+    db.collection("pokemons").document("${currentPokemon.number}" + currentUser!!.uid).set(
         PokemonBasicInfo(
             name = currentPokemon.name,
             imageUrl = currentPokemon.imageUrl,

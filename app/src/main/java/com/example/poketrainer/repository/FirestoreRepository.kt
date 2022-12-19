@@ -3,6 +3,7 @@ package com.example.poketrainer.repository
 import android.util.Log
 import com.example.poketrainer.data.Resource
 import com.example.poketrainer.model.pokeList.PokemonBasicInfo
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -33,9 +34,10 @@ class FirestoreRepository {
     suspend fun removePokemonFromFirestore(id: Int): Resource<Boolean> {
         return suspendCoroutine { continuation ->
             val db = Firebase.firestore
+            val currentUserId = FirebaseAuth.getInstance().currentUser!!.uid
             try {
 
-                db.collection("pokemons").document(id.toString())
+                db.collection("pokemons").document("$id" + currentUserId)
                     .delete()
                     .addOnSuccessListener {
                         continuation.resume(Resource.Success(data = true))
